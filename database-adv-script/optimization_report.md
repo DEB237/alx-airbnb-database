@@ -1,40 +1,39 @@
-# Query Optimization Report
+# SQL Query Optimization Report
 
-## Objective
-Improve the performance of a complex SQL query that retrieves all bookings along with user, property, and payment details.
+## Objective:
+To analyze the performance of the SQL query that retrieves all bookings along with user details, property details, and payment details, and to identify any inefficiencies. The goal is to optimize the query for faster performance by using indexing and query refactoring.
 
-## Initial Query
-The initial query joins the `Booking`, `User`, `Property`, and `Payment` tables to retrieve comprehensive booking data. See `perfomance.sql` for the full query.
+---
 
-## Performance Analysis
-We used the `EXPLAIN` command to analyze the initial query. Below are the key findings:
+## Original Query
 
-### Query Plan Highlights
-1. **Full Table Scans**:
-   - The `User`, `Property`, and `Booking` tables were scanned entirely due to the lack of specific filtering criteria.
-   
-2. **Join Inefficiencies**:
-   - Joins on large tables, such as `Booking` and `Property`, significantly increased the query execution time.
+The original query retrieves all bookings and joins the `User`, `Property`, and `Payment` tables:
 
-3. **Index Usage**:
-   - The database utilized primary key indexes for the joins, but additional indexes could optimize performance further.
-
-### Execution Time
-- **Initial Query Execution Time**: **220ms** on a medium-sized dataset.
-
-## Refactoring Steps
-### 1. **Add Filtering Criteria**
-   - Instead of retrieving all rows, add filtering conditions such as specific date ranges or statuses to reduce the dataset size.
-
-### 2. **Optimize Joins**
-   - Ensure foreign key columns used in joins (`user_id`, `property_id`, `booking_id`) have appropriate indexes.
-
-### 3. **Use Indexes**
-   - Create indexes on frequently queried columns to speed up lookups:
-     - `User.email`
-     - `Property.location`
-     - `Booking.property_id`
-
-### 4. **Remove Unnecessary Columns**
-   - Only select necessary columns to reduce data transfer and processing.
-
+```sql
+-- Original query to retrieve all bookings with user details, property details, and payment details
+SELECT 
+    Booking.booking_id,
+    Booking.start_date,
+    Booking.end_date,
+    Booking.total_price AS booking_total_price,
+    Booking.status AS booking_status,
+    User.user_id,
+    User.first_name AS user_first_name,
+    User.last_name AS user_last_name,
+    User.email AS user_email,
+    Property.property_id,
+    Property.name AS property_name,
+    Property.location AS property_location,
+    Property.pricepernight AS property_price_per_night,
+    Payment.payment_id,
+    Payment.amount AS payment_amount,
+    Payment.payment_method AS payment_method,
+    Payment.payment_date AS payment_date
+FROM 
+    Booking
+JOIN 
+    User ON Booking.user_id = User.user_id
+JOIN 
+    Property ON Booking.property_id = Property.property_id
+JOIN 
+    Payment ON Booking.booking_id = Payment.booking_id;
