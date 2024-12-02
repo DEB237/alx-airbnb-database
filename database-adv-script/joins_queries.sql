@@ -1,7 +1,6 @@
--- Query 1: INNER JOIN to retrieve all bookings and respective users
+-- Query 1: INNER JOIN - Retrieve all bookings and the respective users who made those bookings
 SELECT 
     Booking.booking_id,
-    Booking.property_id,
     Booking.start_date,
     Booking.end_date,
     Booking.total_price,
@@ -10,30 +9,75 @@ SELECT
     User.first_name,
     User.last_name,
     User.email
-FROM Booking
-INNER JOIN User ON Booking.user_id = User.user_id;
+FROM 
+    Booking
+INNER JOIN 
+    User 
+ON 
+    Booking.user_id = User.user_id;
 
--- Query 2: LEFT JOIN to retrieve all properties and their reviews, including properties with no reviews
+-- Query 2: LEFT JOIN - Retrieve all properties and their reviews, including properties that have no reviews
 SELECT 
     Property.property_id,
     Property.name AS property_name,
     Property.description,
-    Property.location,
-    Property.pricepernight,
     Review.review_id,
     Review.rating,
     Review.comment
-FROM Property
-LEFT JOIN Review ON Property.property_id = Review.property_id;
+FROM 
+    Property
+LEFT JOIN 
+    Review 
+ON 
+    Property.property_id = Review.property_id;
 
--- Query 3: FULL OUTER JOIN to retrieve all users and all bookings, even if no link exists
+-- Query 3: FULL OUTER JOIN - Retrieve all users and all bookings, even if the user has no booking or a booking is not linked to a user
+
 SELECT 
-    User.user_id AS user_id,
-    User.first_name AS user_first_name,
-    User.last_name AS user_last_name,
-    Booking.booking_id AS booking_id,
-    Booking.property_id AS booking_property_id,
+    User.user_id,
+    User.first_name,
+    User.last_name,
+    Booking.booking_id,
     Booking.start_date,
-    Booking.end_date
-FROM User
-FULL OUTER JOIN Booking ON User.user_id = Booking.user_id;
+    Booking.end_date,
+    Booking.total_price
+FROM 
+    User
+FULL OUTER JOIN 
+    Booking 
+ON 
+    User.user_id = Booking.user_id;
+
+
+-- Combine LEFT JOIN and RIGHT JOIN using UNION
+SELECT 
+    User.user_id,
+    User.first_name,
+    User.last_name,
+    Booking.booking_id,
+    Booking.start_date,
+    Booking.end_date,
+    Booking.total_price
+FROM 
+    User
+LEFT JOIN 
+    Booking 
+ON 
+    User.user_id = Booking.user_id
+
+UNION
+
+SELECT 
+    User.user_id,
+    User.first_name,
+    User.last_name,
+    Booking.booking_id,
+    Booking.start_date,
+    Booking.end_date,
+    Booking.total_price
+FROM 
+    Booking
+LEFT JOIN 
+    User 
+ON 
+    Booking.user_id = User.user_id;
